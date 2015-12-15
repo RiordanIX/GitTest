@@ -1,8 +1,10 @@
-#include <stdio>
+#include "SDL2/SDL.h"
+#include <iostream>
 
 int main() {
-	std::cout << "Hello world" << std::endl;
-	std::cout << "Where are you?" << std::endl;
-	
+	SDL_Init(SDL_INIT_EVERYTHING);
+	std::cout << "It worked!" << std::endl;
+
+	SDL_Quit();	
 	return 0;
 }
