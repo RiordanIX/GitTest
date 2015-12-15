@@ -6,7 +6,8 @@ CC = g++
 
 #COMPILER_FLAGS specifies the additional compilation options we're using
 # -w suppresses all warnings
-COMPILER_FLAGS = -w
+# -std=c++11 compiles using the c++ 11
+COMPILER_FLAGS = -std=c++11 -w
 
 #LINKER_FLAGS specifies the libraries we're linking against
 LINKER_FLAGS = -lSDL2
