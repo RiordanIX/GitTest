@@ -2,3 +2,6 @@
 *~
 
 # ignore the test executable
+testing
+
+# ignore other files
