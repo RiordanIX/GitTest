@@ -13,7 +13,11 @@ bool loadMedia();
 // Frees media and shuts down SDL
 void close();
 
+// Main loop flag
+bool quit = false;
 
+// Event handler
+SDL_Event e;
 
 // global variables to be used in functions 
 const int SCREEN_WIDTH = 640;
@@ -26,7 +30,7 @@ SDL_Window* gWindow = nullptr;
 SDL_Surface* gScreenSurface = nullptr;
 
 // The image we will load and show on the screen
-SDL_Surface* gHelloWorld = nullptr;
+SDL_Surface* gXOut = nullptr;
 
 
 
@@ -41,16 +45,27 @@ int main ( int argc, char* args[] ) {
 		}
 		else {
 			// Apply the image
-			SDL_BlitSurface ( gHelloWorld, NULL, gScreenSurface,
+			SDL_BlitSurface ( gXOut, NULL, gScreenSurface,
 				NULL );
 		}
 	}
 
-	// Update the surface (draw to screen)
-	SDL_UpdateWindowSurface ( gWindow );
+	// While the application is running
+	while ( !quit ) {
+		// Handle events on queue
+		while ( SDL_PollEvent ( &e ) != 0 ) {
+			// User requests quit
+			if ( e.type == SDL_QUIT ) {
+				quit = true;
+			}
+		}
 
-	// Wait a few seconds
-	SDL_Delay ( 5000 );
+		// Apply the image
+		SDL_BlitSurface ( gXOut, NULL, gScreenSurface, NULL );
+
+		// Update the surface (draw to screen)
+		SDL_UpdateWindowSurface ( gWindow );
+	}
 
 	// end the session and free resources
 	close();
@@ -94,8 +109,8 @@ bool loadMedia() {
 	bool success = true;
 
 	// Load splash image
-	gHelloWorld = SDL_LoadBMP( "media/preview.bmp" );
-	if ( gHelloWorld == nullptr) {
+	gXOut = SDL_LoadBMP( "media/preview.bmp" );
+	if ( gXOut == nullptr) {
 		cout << "Unable to load image media/preview.png" << endl;
 		success = false;
 	}
@@ -108,8 +123,8 @@ bool loadMedia() {
 // release memory and end session
 void close() {
 	// Deallocate surface
-	SDL_FreeSurface ( gHelloWorld );
-	gHelloWorld = nullptr;
+	SDL_FreeSurface ( gXOut );
+	gXOut = nullptr;
 
 	// Destroy window
 	SDL_DestroyWindow ( gWindow );
