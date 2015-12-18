@@ -140,8 +140,17 @@ bool init() {
 			success = false;
 		}
 		else {
-			// Get window surface
-			gScreenSurface = SDL_GetWindowSurface( gWindow );
+			// Initialize PNG loading
+			int imgFlags = IMG_INIT_PNG;
+			if ( !( IMG_Init( imgFlags ) & imgFlags ) ) {
+				cout << "SDL_image could not initialize! SDL_image Error: ";
+				cout << IMG_GetError() << endl;
+				success = false;
+			}
+			else {
+				// Get window surface
+				gScreenSurface = SDL_GetWindowSurface( gWindow );
+			}
 		}
 	}
 
@@ -225,11 +234,11 @@ SDL_Surface* loadSurface( string path ) {
 	SDL_Surface* optimizedSurface = nullptr;
 
 	// Load image at specified path
-	SDL_Surface* loadedSurface = SDL_LoadBMP( path.c_str() );
+	SDL_Surface* loadedSurface = IMG_Load( path.c_str() );
 
 	if( loadedSurface == nullptr ) {
 		cout << "Unable to load image " << path << "! SDL Error: ";
-		cout << SDL_GetError() << endl;
+		cout << IMG_GetError() << endl;
 	}
 	else {
 		// Convert surface to screen format
