@@ -220,13 +220,29 @@ void close() {
 
 // Loads images into surfaces to be used
 SDL_Surface* loadSurface( string path ) {
+	// The final optimized image
+	SDL_Surface* optimizedSurface = nullptr;
+
 	// Load image at specified path
 	SDL_Surface* loadedSurface = SDL_LoadBMP( path.c_str() );
+
 	if( loadedSurface == nullptr ) {
-		cout << "Unable to load image " << path.c_str() << "SDL Error: ";
+		cout << "Unable to load image " << path << "! SDL Error: ";
 		cout << SDL_GetError() << endl;
 	}
+	else {
+		// Convert surface to screen format
+		optimizedSurface = SDL_ConvertSurface( loadedSurface,
+								gScreenSurface->format, NULL );
+		if ( optimizedSurface == nullptr ) {
+			cout << "Unable to optimize image " << path << "! SDL Error: ";
+			cout << SDL_GetError() << endl;
+		}
 
-	return loadedSurface;
+		// Get rid of old loaded surface
+		SDL_FreeSurface( loadedSurface );
+	}
+
+	return optimizedSurface;
 }
 
