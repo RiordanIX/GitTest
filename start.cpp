@@ -25,6 +25,14 @@ void close();
 // Loads media
 bool loadMedia();
 
+// Loads individual image as texture
+SDL_Texture* loadTexture( string path );
+
+// The window renderer
+SDL_Renderer* gRenderer = nullptr;
+
+// Current displayed texture
+SDL_Texture* gTexture = nullptr;
 
 // Loads individual image
 SDL_Surface* loadSurface ( string path );
@@ -140,16 +148,30 @@ bool init() {
 			success = false;
 		}
 		else {
-			// Initialize PNG loading
-			int imgFlags = IMG_INIT_PNG;
-			if ( !( IMG_Init( imgFlags ) & imgFlags ) ) {
-				cout << "SDL_image could not initialize! SDL_image Error: ";
-				cout << IMG_GetError() << endl;
+			// Create renderer for window
+			gRenderer = SDL_CreateRenderer( gWindow, -1,
+											 SDL_RENDERER_ACCELERATED );
+			if( gRenderer == nullptr ) {
+				cout << "Renderer could not be created! SDL Error: ";
+				cout << SDL_GetError() << endl;
 				success = false;
 			}
 			else {
-				// Get window surface
-				gScreenSurface = SDL_GetWindowSurface( gWindow );
+				//Initialize renderer color
+				SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
+
+
+				// Initialize PNG loading
+				int imgFlags = IMG_INIT_PNG;
+				if ( !( IMG_Init( imgFlags ) & imgFlags ) ) {
+					cout << "SDL_image could not initialize! SDL_image Error: ";
+					cout << IMG_GetError() << endl;
+					success = false;
+				}
+				else {
+					// Get window surface
+					gScreenSurface = SDL_GetWindowSurface( gWindow );
+				}
 			}
 		}
 	}
@@ -256,3 +278,27 @@ SDL_Surface* loadSurface( string path ) {
 	return optimizedSurface;
 }
 
+SDL_Texture* loadTexture( string path ) {
+	// The final texture
+	SDL_Texture* newTexture = nullptr;
+
+	// Load image at specified path
+	SDL_Surface* loadedSurface = IMG_Load( path.c_str() );
+	if( loadedSurface == nullptr ) {
+		cout << "Unable to load image " << path << "! SDL_Image Error: ";
+		cout << IMG_GetError() << endl;
+	}
+	else {
+		// Create texture from surface pixels
+		newTexture = SDL_CreateTextureFroSurface( gRenderer, loadedSurface );
+		if( newTexture == nullptr ) {
+			cout << "Unable to create texture from " << path << "! SDL Error:";
+			cout << " " << SDL_GetError() << endl;
+		}
+
+		// Get rid of old loaded surfaces
+		SDL_FreeSurface( loaded surface
+	}
+
+	return newTexture;
+}
