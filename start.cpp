@@ -60,7 +60,9 @@ SDL_Window* gWindow = nullptr;
 // The surface contained by the window
 SDL_Surface* gScreenSurface = nullptr;
 
-
+// top left viewport
+SDL_Rect directionalViewport;
+SDL_Rect totalViewport;
 
 int main ( int argc, char* args[] ) {
     //Startup SDL and create window
@@ -116,8 +118,7 @@ int main ( int argc, char* args[] ) {
 
         // Clear screen
         SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
-        SDL_RenderClear( gRenderer );
-        SDL_BlitSurface ( gCurrentSurface , NULL, gScreenSurface, NULL );
+        SDL_RenderClear ( gRenderer );
 
         // Render red filled quad
         SDL_Rect fillRect = { SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4,
@@ -141,10 +142,22 @@ int main ( int argc, char* args[] ) {
         for( int i = 0; i < SCREEN_HEIGHT; i += 4 ) {
             SDL_RenderDrawPoint( gRenderer, SCREEN_WIDTH / 2, i );
         }
+
+        // Draw current surface to screen
+//		SDL_BlitSurface( gCurrentSurface , NULL, gScreenSurface , NULL );
+
+        // change viewport to upper left corner (directionals)
+        SDL_RenderSetViewport( gRenderer, &directionalViewport );
+        SDL_RenderCopy( gRenderer, 
+
+
+
+        // bring everything to the front
         SDL_RenderPresent( gRenderer );
 
+
         // Update the surface (draw to screen)
-        SDL_UpdateWindowSurface ( gWindow );
+//		SDL_UpdateWindowSurface ( gWindow );
 
     }
 
@@ -165,6 +178,16 @@ bool init() {
         success = false;
     }
     else {
+        directionalViewport.x = 0;
+        directionalViewport.y = 0;
+        directionalViewport.w = 50;
+        directionalViewport.h = 50;
+
+        totalViewport.x = 0;
+        totalViewport.y = 0;
+        totalViewport.w = SCREEN_WIDTH;
+        totalViewport.h = SCREEN_HEIGHT;
+
         // Create window
         gWindow = SDL_CreateWindow( "Testing", SDL_WINDOWPOS_UNDEFINED,
             SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT,
