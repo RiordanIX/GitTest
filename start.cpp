@@ -38,10 +38,10 @@ SDL_Texture* gTexture = nullptr;
 SDL_Surface* loadSurface ( string path );
 
 // The images that correspond to a keypress
-SDL_Surface* gKeyPressSurfaces[ KEY_PRESS_SURFACE_TOTAL ];
+SDL_Texture* gKeyPressTextures[ KEY_PRESS_SURFACE_TOTAL ];
 
 // Current displayed image
-SDL_Surface* gCurrentSurface = nullptr;
+SDL_Texture* gCurrentTexture = nullptr;
 
 
 // Main loop flag
@@ -75,8 +75,8 @@ int main ( int argc, char* args[] ) {
         }
         else {
             // Apply the image
-            SDL_BlitSurface ( gCurrentSurface , NULL, gScreenSurface,
-                NULL );
+        //	SDL_RenderCopy ( gRenderer, gTexture, NULL, NULL );
+
         }
     }
 
@@ -93,23 +93,23 @@ int main ( int argc, char* args[] ) {
                 // Select surfaces based on key press
                 switch( e.key.keysym.sym ) {
                     case SDLK_UP:
-                    gCurrentSurface = gKeyPressSurfaces[ KEY_PRESS_SURFACE_UP];
+                    gCurrentTexture = gKeyPressTextures[ KEY_PRESS_SURFACE_UP];
                     break;
 
                     case SDLK_DOWN:
-                    gCurrentSurface = gKeyPressSurfaces[KEY_PRESS_SURFACE_DOWN];
+                    gCurrentTexture = gKeyPressTextures[KEY_PRESS_SURFACE_DOWN];
                     break;
 
                     case SDLK_LEFT:
-                    gCurrentSurface = gKeyPressSurfaces[KEY_PRESS_SURFACE_LEFT];
+                    gCurrentTexture = gKeyPressTextures[KEY_PRESS_SURFACE_LEFT];
                     break;
 
                     case SDLK_RIGHT:
-                    gCurrentSurface =gKeyPressSurfaces[KEY_PRESS_SURFACE_RIGHT];
+                    gCurrentTexture =gKeyPressTextures[KEY_PRESS_SURFACE_RIGHT];
                     break;
 
                     default:
-                    gCurrentSurface=gKeyPressSurfaces[
+                    gCurrentTexture = gKeyPressTextures[
                                                 KEY_PRESS_SURFACE_DEFAULT];
                     break;
                 }
@@ -148,13 +148,15 @@ int main ( int argc, char* args[] ) {
 
         // change viewport to upper left corner (directionals)
         SDL_RenderSetViewport( gRenderer, &directionalViewport );
-        SDL_RenderCopy( gRenderer, 
+        SDL_RenderCopy( gRenderer, gCurrentTexture, NULL, NULL ); 
 
 
 
         // bring everything to the front
         SDL_RenderPresent( gRenderer );
-
+        
+        // Reset viewport to be full screen:
+        SDL_RenderSetViewport( gRenderer, &totalViewport );
 
         // Update the surface (draw to screen)
 //		SDL_UpdateWindowSurface ( gWindow );
@@ -243,46 +245,46 @@ bool loadMedia() {
     }
 
     // Load default surface
-    gKeyPressSurfaces[ KEY_PRESS_SURFACE_DEFAULT ] = loadSurface(
-                                                    "media/default.bmp");
-    if ( gKeyPressSurfaces[ KEY_PRESS_SURFACE_DEFAULT ] == nullptr) {
+    gKeyPressTextures[ KEY_PRESS_SURFACE_DEFAULT ] = loadTexture(
+                                                    "media/default.png");
+    if ( gKeyPressTextures[ KEY_PRESS_SURFACE_DEFAULT ] == nullptr) {
         cout << "Unable to load image media/default.bmp" << endl;
         success = false;
     }
 
     // Load up surface
-    gKeyPressSurfaces[ KEY_PRESS_SURFACE_UP ] = loadSurface(
-                                                    "media/up.bmp");
-    if ( gKeyPressSurfaces[ KEY_PRESS_SURFACE_UP ] == nullptr) {
-        cout << "Unable to load image media/up.bmp" << endl;
+    gKeyPressTextures[ KEY_PRESS_SURFACE_UP ] = loadTexture(
+                                                    "media/up.png");
+    if ( gKeyPressTextures[ KEY_PRESS_SURFACE_UP ] == nullptr) {
+        cout << "Unable to load image media/up.png" << endl;
         success = false;
     }
 
     // Load down surface
-    gKeyPressSurfaces[ KEY_PRESS_SURFACE_DOWN ] = loadSurface(
-                                                    "media/down.bmp");
-    if ( gKeyPressSurfaces[ KEY_PRESS_SURFACE_DOWN ] == nullptr) {
-        cout << "Unable to load image media/down.bmp" << endl;
+    gKeyPressTextures[ KEY_PRESS_SURFACE_DOWN ] = loadTexture(
+                                                    "media/down.png");
+    if ( gKeyPressTextures[ KEY_PRESS_SURFACE_DOWN ] == nullptr) {
+        cout << "Unable to load image media/down.png" << endl;
         success = false;
     }
 
     // Load left surface
-    gKeyPressSurfaces[ KEY_PRESS_SURFACE_LEFT ] = loadSurface(
-                                                    "media/left.bmp");
-    if ( gKeyPressSurfaces[ KEY_PRESS_SURFACE_LEFT ] == nullptr) {
-        cout << "Unable to load image media/left.bmp" << endl;
+    gKeyPressTextures[ KEY_PRESS_SURFACE_LEFT ] = loadTexture(
+                                                    "media/left.png");
+    if ( gKeyPressTextures[ KEY_PRESS_SURFACE_LEFT ] == nullptr) {
+        cout << "Unable to load image media/left.png" << endl;
         success = false;
     }
 
     // Load right surface
-    gKeyPressSurfaces[ KEY_PRESS_SURFACE_RIGHT ] = loadSurface(
-                                                    "media/right.bmp");
-    if ( gKeyPressSurfaces[ KEY_PRESS_SURFACE_RIGHT ] == nullptr) {
-        cout << "Unable to load image media/right.bmp" << endl;
+    gKeyPressTextures[ KEY_PRESS_SURFACE_RIGHT ] = loadTexture(
+                                                    "media/right.png");
+    if ( gKeyPressTextures[ KEY_PRESS_SURFACE_RIGHT ] == nullptr) {
+        cout << "Unable to load image media/right.png" << endl;
         success = false;
     }
 
-    gCurrentSurface = gKeyPressSurfaces[KEY_PRESS_SURFACE_DEFAULT];
+    gCurrentTexture = gKeyPressTextures[KEY_PRESS_SURFACE_DEFAULT];
     return success;
 }
 
@@ -290,12 +292,12 @@ bool loadMedia() {
 
 // release memory and end session
 void close() {
-    // Deallocate surface
+    // Deallocate textures
 
     for (int i = KEY_PRESS_SURFACE_DEFAULT; i++; i < KEY_PRESS_SURFACE_TOTAL) {
 
-        SDL_FreeSurface ( gKeyPressSurfaces[i] );
-        gKeyPressSurfaces[i] = nullptr;
+        SDL_DestroyTexture ( gKeyPressTextures[i] );
+        gKeyPressTextures[i] = nullptr;
     }
 
     // Free and destroy texture
